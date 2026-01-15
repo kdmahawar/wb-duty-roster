@@ -3,111 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WB Duty Roster</title>
+    <title>WB Duty Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 15px; margin: 0; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; position: relative; }
-        h2 { text-align: center; color: #333; margin-top: 0; margin-bottom: 25px; }
-        
-        /* Buttons */
-        .toggle-btn { display: flex; background: #e9ecef; border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
-        .toggle-btn div { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; color: #666; transition: 0.3s; }
-        .toggle-btn .active { background: #007bff; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-
-        /* Inputs */
-        label { display: block; margin-top: 15px; font-weight: 600; color: #444; }
-        select, input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; background: #fafafa; }
-        
-        /* Action Button */
-        button { width: 100%; padding: 12px; margin-top: 25px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { background-color: #218838; }
-        
-        /* Results */
-        .result-box { margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; display: none; animation: fadeIn 0.4s; }
-        .shift-large { font-size: 26px; font-weight: bold; display: block; margin: 10px 0; }
-        
-        /* Shift Colors */
-        .f-shift { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
-        .s-shift { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
-        .g-shift { background-color: #fff3cd; color: #664d03; border: 1px solid #ffecb5; }
-        .r-shift { background-color: #e2e3e5; color: #41464b; border: 1px solid #d3d6d8; }
-
-        .list-row { display: flex; justify-content: space-between; padding: 12px 10px; border-bottom: 1px solid #eee; align-items: center; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; }
-
-        /* Credits Footer */
-        .footer-credit {
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-            text-align: center;
-            font-size: 14px;
-            color: #888;
-            font-weight: 500;
+        :root {
+            --primary-color: #4361ee;
+            --success-color: #2ec4b6;
+            --danger-color: #e71d36;
+            --warning-color: #ff9f1c;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
         }
-        .footer-credit span { color: #007bff; font-weight: bold; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 15px;
+            color: #333;
+        }
+
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #3f37c9);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .tab-nav {
+            display: flex;
+            background: rgba(255,255,255,0.1);
+            margin: 20px 20px 0;
+            border-radius: 12px;
+            padding: 5px;
+        }
+
+        .tab-nav div {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .tab-nav div.active {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #666;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn-check {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-check:active {
+            transform: scale(0.98);
+        }
+
+        /* Results Card */
+        .result-card {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .shift-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 10px 0;
+            display: block;
+        }
+
+        /* Shift Colors */
+        .f-bg { background: #e7f5ff; color: #0077b6; border: 1px solid #caf0f8; }
+        .s-bg { background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; }
+        .g-bg { background: #fffdf2; color: #975a16; border: 1px solid #faf089; }
+        .r-bg { background: #f7fafc; color: #4a5568; border: 1px solid #e2e8f0; }
+
+        /* List Styling */
+        .list-section {
+            margin-top: 20px;
+        }
+
+        .shift-header {
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .name-row {
+            padding: 12px 15px;
+            background: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: #aaa;
+            border-top: 1px solid #eee;
+        }
+
+        .footer b { color: var(--primary-color); }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>WB Duty Roster 📋</h2>
-
-    <div class="toggle-btn">
-        <div id="btn1" class="active" onclick="setMode(1)">👤 नाम से</div>
-        <div id="btn2" onclick="setMode(2)">📅 तारीख से</div>
+<div class="app-container">
+    <div class="header">
+        <h2>WB Duty Master</h2>
+        <div class="tab-nav">
+            <div id="btn1" class="active" onclick="setMode(1)">👤 नाम से</div>
+            <div id="btn2" onclick="setMode(2)">📅 तारीख से</div>
+        </div>
     </div>
 
-    <div id="mode1">
-        <label>कर्मचारी चुनें (Employee):</label>
-        <select id="empSelect"></select>
-        
-        <label>तारीख चुनें (Date):</label>
-        <input type="date" id="dateInput1">
-        
-        <button onclick="checkShift()">शिफ्ट देखें 🔍</button>
-        <div id="result1" class="result-box"></div>
+    <div class="content">
+        <div id="mode1">
+            <label>कर्मचारी चुनें</label>
+            <select id="empSelect"></select>
+            
+            <label>तारीख चुनें</label>
+            <input type="date" id="dateInput1">
+            
+            <button class="btn-check" onclick="checkShift()">शिफ्ट देखें</button>
+            <div id="result1" class="result-card"></div>
+        </div>
+
+        <div id="mode2" style="display:none;">
+            <label>तारीख चुनें</label>
+            <input type="date" id="dateInput2">
+            
+            <button class="btn-check" onclick="checkDailyList()">पूरा शेड्यूल</button>
+            <div id="result2"></div>
+        </div>
     </div>
 
-    <div id="mode2" style="display:none;">
-        <label>तारीख चुनें (Date):</label>
-        <input type="date" id="dateInput2">
-        
-        <button onclick="checkDailyList()">शेड्यूल देखें 📋</button>
-        <div id="result2" style="margin-top:20px;"></div>
-    </div>
-
-    <div class="footer-credit">
-        Designed & Created by <br> <span>K. D. Mahawar</span>
+    <div class="footer">
+        Designed with ❤️ by <br><b>K. D. Mahawar</b>
     </div>
 </div>
 
 <script>
-    // --- DATABASE (Corrected Logic: 6 Days Work -> Rest -> Change Shift) ---
-    // baseF: A past date where the employee STARTED a First Shift (F) week.
-    
     const employees = [
-        { name: "Kirit G. Parmar", rest: 0, baseF: "2026-01-12" }, // Rest Sun
-        { name: "Ajay R. Vasava", rest: 1, baseF: "2026-01-06" }, // Rest Mon
-        { name: "Sanjay H. Vasava", rest: 2, baseF: "2026-01-14" }, // Rest Tue
-        { name: "Amit H Vasava", rest: 3, baseF: "2026-01-08" }, // Rest Wed
-        { name: "Alpesh A. Vasava", rest: 4, baseF: "2026-01-02" }, // Rest Thu
-        { name: "Nilesh R. Vasava", rest: 5, baseF: "2026-01-10" }, // Rest Fri
-        { name: "Ravindra Vasava", rest: 6, baseF: "2026-01-04" }, // Rest Sat
-        { name: "Rajan B. Vasava", rest: 0, baseF: "2026-01-12" }, // Rest Sun
-        { name: "Samsing P. Vasava", rest: 1, baseF: "2026-01-06" }, // Rest Mon
-        { name: "Manilal B. Vasava", rest: 2, baseF: "2026-01-14" }, // Rest Tue
-        { name: "Prince D. Bhagat", rest: 3, baseF: "2026-01-08" }, // Rest Wed
-        { name: "Chirag N. Rohit", rest: 4, baseF: "2026-01-02" }, // Rest Thu
-        { name: "Paresh G. Vasava", rest: 5, baseF: "2026-01-10" }, // Rest Fri
-        { name: "Kalpesh M. Vasava", rest: 6, baseF: "2026-01-04" }, // Rest Sat
-        { name: "Ajay Rajesh Vasava", rest: 0, baseF: "2026-01-12" }, // Rest Sun
-        { name: "Arjun T. Vasava", rest: 1, baseF: "2026-01-06" }, // Rest Mon
-        { name: "Santosh K Vasava", rest: 2, baseF: "2026-01-14" }, // Rest Tue
-        { name: "Ankit A Vasava", rest: 3, baseF: "2026-01-08" }, // Rest Wed
-        { name: "Jayesh J. Vasava", rest: 0, type: "GEN" } // General Shift
+        { name: "Kirit G. Parmar", rest: 0, baseF: "2026-01-12" },
+        { name: "Ajay R. Vasava", rest: 1, baseF: "2026-01-06" },
+        { name: "Sanjay H. Vasava", rest: 2, baseF: "2026-01-14" },
+        { name: "Amit H Vasava", rest: 3, baseF: "2026-01-08" },
+        { name: "Alpesh A. Vasava", rest: 4, baseF: "2026-01-02" },
+        { name: "Nilesh R. Vasava", rest: 5, baseF: "2026-01-10" },
+        { name: "Ravindra Vasava", rest: 6, baseF: "2026-01-04" },
+        { name: "Rajan B. Vasava", rest: 0, baseF: "2026-01-12" },
+        { name: "Samsing P. Vasava", rest: 1, baseF: "2026-01-06" },
+        { name: "Manilal B. Vasava", rest: 2, baseF: "2026-01-14" },
+        { name: "Prince D. Bhagat", rest: 3, baseF: "2026-01-08" },
+        { name: "Chirag N. Rohit", rest: 4, baseF: "2026-01-02" },
+        { name: "Paresh G. Vasava", rest: 5, baseF: "2026-01-10" },
+        { name: "Kalpesh M. Vasava", rest: 6, baseF: "2026-01-04" },
+        { name: "Ajay Rajesh Vasava", rest: 0, baseF: "2026-01-12" },
+        { name: "Arjun T. Vasava", rest: 1, baseF: "2026-01-06" },
+        { name: "Santosh K Vasava", rest: 2, baseF: "2026-01-14" },
+        { name: "Ankit A Vasava", rest: 3, baseF: "2026-01-08" },
+        { name: "Jayesh J. Vasava", rest: 0, type: "GEN" }
     ];
 
     window.onload = function() {
@@ -115,7 +242,7 @@
         employees.forEach((e, i) => {
             let opt = document.createElement('option');
             opt.value = i;
-            opt.text = (i+1) + ". " + e.name;
+            opt.text = e.name;
             sel.add(opt);
         });
         const today = new Date().toISOString().split('T')[0];
@@ -128,71 +255,53 @@
         document.getElementById('mode2').style.display = m===2 ? 'block' : 'none';
         document.getElementById('btn1').className = m===1 ? 'active' : '';
         document.getElementById('btn2').className = m===2 ? 'active' : '';
-        document.getElementById('result1').style.display = 'none';
-        document.getElementById('result2').innerHTML = '';
     }
 
     function getShift(emp, dateStr) {
         const date = new Date(dateStr);
-        const dayOfWeek = date.getDay(); // 0=Sun...6=Sat
-
-        if (dayOfWeek === emp.rest) return { code: 'R', name: 'Rest (आराम)', class: 'r-shift' };
-        if (emp.type === "GEN") return { code: 'G', name: 'General Shift', class: 'g-shift' };
-
+        const dayOfWeek = date.getDay();
+        if (dayOfWeek === emp.rest) return { code: 'R', name: 'Rest (आराम)', class: 'r-bg' };
+        if (emp.type === "GEN") return { code: 'G', name: 'General Shift', class: 'g-bg' };
+        
         const base = new Date(emp.baseF);
         const diffDays = Math.round((date - base) / (1000 * 60 * 60 * 24)); 
         const weeksPassed = Math.floor(diffDays / 7);
-
-        if (weeksPassed % 2 === 0) return { code: 'F', name: 'First Shift (पहली)', class: 'f-shift' };
-        else return { code: 'S', name: 'Second Shift (दूसरी)', class: 's-shift' };
+        if (weeksPassed % 2 === 0) return { code: 'F', name: 'First Shift', class: 'f-bg' };
+        else return { code: 'S', name: 'Second Shift', class: 's-bg' };
     }
 
     function checkShift() {
         const idx = document.getElementById('empSelect').value;
         const date = document.getElementById('dateInput1').value;
-        if(!date) return alert("तारीख चुनें");
-
-        const emp = employees[idx];
-        const shift = getShift(emp, date);
-
+        const shift = getShift(employees[idx], date);
         const res = document.getElementById('result1');
         res.style.display = 'block';
-        res.className = 'result-box ' + shift.class;
-        res.innerHTML = `<div>${emp.name}</div>
-                         <div class="shift-large">${shift.name}</div>
-                         <div>${new Date(date).toLocaleDateString('hi-IN', {weekday:'long', day:'numeric', month:'long'})}</div>`;
+        res.className = 'result-card ' + shift.class;
+        res.innerHTML = `<span style="font-size:14px; opacity:0.8">${employees[idx].name}</span><br>
+                         <span class="shift-title">${shift.name}</span>
+                         <span style="font-size:12px">${new Date(date).toDateString()}</span>`;
     }
 
     function checkDailyList() {
         const date = document.getElementById('dateInput2').value;
-        if(!date) return alert("तारीख चुनें");
-
-        let html = '';
-        const fList=[], sList=[], gList=[], rList=[];
-
+        let f=[], s=[], g=[], r=[];
         employees.forEach(emp => {
-            const s = getShift(emp, date);
-            const item = `<div class="list-row">
-                            <span>${emp.name}</span>
-                            <span class="badge ${s.class}">${s.code}</span>
-                          </div>`;
-            if(s.code === 'F') fList.push(item);
-            else if(s.code === 'S') sList.push(item);
-            else if(s.code === 'G') gList.push(item);
-            else rList.push(item);
+            const sh = getShift(emp, date);
+            const row = `<div class="name-row"><span>${emp.name}</span><b>${sh.code}</b></div>`;
+            if(sh.code === 'F') f.push(row);
+            else if(sh.code === 'S') s.push(row);
+            else if(sh.code === 'G') g.push(row);
+            else r.push(row);
         });
 
-        const dName = new Date(date).toLocaleDateString('hi-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-        
-        html += `<h3 style="text-align:center; color:#555; margin-bottom:20px;">${dName}</h3>`;
-        if(fList.length) html += `<div style="background:#d1e7dd; padding:8px; border-radius:5px; font-weight:bold; color:#0f5132; margin-top:15px;">🌞 First Shift (${fList.length})</div><div>${fList.join('')}</div>`;
-        if(sList.length) html += `<div style="background:#f8d7da; padding:8px; border-radius:5px; font-weight:bold; color:#842029; margin-top:15px;">🌙 Second Shift (${sList.length})</div><div>${sList.join('')}</div>`;
-        if(gList.length) html += `<div style="background:#fff3cd; padding:8px; border-radius:5px; font-weight:bold; color:#664d03; margin-top:15px;">🏢 General (${gList.length})</div><div>${gList.join('')}</div>`;
-        if(rList.length) html += `<div style="background:#e2e3e5; padding:8px; border-radius:5px; font-weight:bold; color:#41464b; margin-top:15px;">🛌 Rest (${rList.length})</div><div>${rList.join('')}</div>`;
-
-        document.getElementById('result2').innerHTML = html;
+        document.getElementById('result2').innerHTML = `
+            <div class="list-section">
+                <div class="shift-header f-bg"><span>🌞 First Shift</span><span>${f.length}</span></div>${f.join('')}
+                <div class="shift-header s-bg" style="margin-top:15px;"><span>🌙 Second Shift</span><span>${s.length}</span></div>${s.join('')}
+                <div class="shift-header g-bg" style="margin-top:15px;"><span>🏢 General</span><span>${g.length}</span></div>${g.join('')}
+                <div class="shift-header r-bg" style="margin-top:15px;"><span>🛌 Rest</span><span>${r.length}</span></div>${r.join('')}
+            </div>`;
     }
 </script>
-
 </body>
 </html>
