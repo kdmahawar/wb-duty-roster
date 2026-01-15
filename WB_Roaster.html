@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WB Duty Roster</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 15px; margin: 0; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; position: relative; }
+        h2 { text-align: center; color: #333; margin-top: 0; margin-bottom: 25px; }
+        
+        /* Buttons */
+        .toggle-btn { display: flex; background: #e9ecef; border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
+        .toggle-btn div { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; color: #666; transition: 0.3s; }
+        .toggle-btn .active { background: #007bff; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* Inputs */
+        label { display: block; margin-top: 15px; font-weight: 600; color: #444; }
+        select, input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; background: #fafafa; }
+        
+        /* Action Button */
+        button { width: 100%; padding: 12px; margin-top: 25px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background-color: #218838; }
+        
+        /* Results */
+        .result-box { margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; display: none; animation: fadeIn 0.4s; }
+        .shift-large { font-size: 26px; font-weight: bold; display: block; margin: 10px 0; }
+        
+        /* Shift Colors */
+        .f-shift { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+        .s-shift { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .g-shift { background-color: #fff3cd; color: #664d03; border: 1px solid #ffecb5; }
+        .r-shift { background-color: #e2e3e5; color: #41464b; border: 1px solid #d3d6d8; }
+
+        .list-row { display: flex; justify-content: space-between; padding: 12px 10px; border-bottom: 1px solid #eee; align-items: center; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; }
+
+        /* Credits Footer */
+        .footer-credit {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+            font-weight: 500;
+        }
+        .footer-credit span { color: #007bff; font-weight: bold; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>WB Duty Roster 📋</h2>
+
+    <div class="toggle-btn">
+        <div id="btn1" class="active" onclick="setMode(1)">👤 नाम से</div>
+        <div id="btn2" onclick="setMode(2)">📅 तारीख से</div>
+    </div>
+
+    <div id="mode1">
+        <label>कर्मचारी चुनें (Employee):</label>
+        <select id="empSelect"></select>
+        
+        <label>तारीख चुनें (Date):</label>
+        <input type="date" id="dateInput1">
+        
+        <button onclick="checkShift()">शिफ्ट देखें 🔍</button>
+        <div id="result1" class="result-box"></div>
+    </div>
+
+    <div id="mode2" style="display:none;">
+        <label>तारीख चुनें (Date):</label>
+        <input type="date" id="dateInput2">
+        
+        <button onclick="checkDailyList()">शेड्यूल देखें 📋</button>
+        <div id="result2" style="margin-top:20px;"></div>
+    </div>
+
+    <div class="footer-credit">
+        Designed & Created by <br> <span>K. D. Mahawar</span>
+    </div>
+</div>
+
+<script>
+    // --- DATABASE (Corrected Logic: 6 Days Work -> Rest -> Change Shift) ---
+    // baseF: A past date where the employee STARTED a First Shift (F) week.
+    
+    const employees = [
+        { name: "Kirit G. Parmar", rest: 0, baseF: "2026-01-12" }, // Rest Sun
+        { name: "Ajay R. Vasava", rest: 1, baseF: "2026-01-06" }, // Rest Mon
+        { name: "Sanjay H. Vasava", rest: 2, baseF: "2026-01-14" }, // Rest Tue
+        { name: "Amit H Vasava", rest: 3, baseF: "2026-01-08" }, // Rest Wed
+        { name: "Alpesh A. Vasava", rest: 4, baseF: "2026-01-02" }, // Rest Thu
+        { name: "Nilesh R. Vasava", rest: 5, baseF: "2026-01-10" }, // Rest Fri
+        { name: "Ravindra Vasava", rest: 6, baseF: "2026-01-04" }, // Rest Sat
+        { name: "Rajan B. Vasava", rest: 0, baseF: "2026-01-12" }, // Rest Sun
+        { name: "Samsing P. Vasava", rest: 1, baseF: "2026-01-06" }, // Rest Mon
+        { name: "Manilal B. Vasava", rest: 2, baseF: "2026-01-14" }, // Rest Tue
+        { name: "Prince D. Bhagat", rest: 3, baseF: "2026-01-08" }, // Rest Wed
+        { name: "Chirag N. Rohit", rest: 4, baseF: "2026-01-02" }, // Rest Thu
+        { name: "Paresh G. Vasava", rest: 5, baseF: "2026-01-10" }, // Rest Fri
+        { name: "Kalpesh M. Vasava", rest: 6, baseF: "2026-01-04" }, // Rest Sat
+        { name: "Ajay Rajesh Vasava", rest: 0, baseF: "2026-01-12" }, // Rest Sun
+        { name: "Arjun T. Vasava", rest: 1, baseF: "2026-01-06" }, // Rest Mon
+        { name: "Santosh K Vasava", rest: 2, baseF: "2026-01-14" }, // Rest Tue
+        { name: "Ankit A Vasava", rest: 3, baseF: "2026-01-08" }, // Rest Wed
+        { name: "Jayesh J. Vasava", rest: 0, type: "GEN" } // General Shift
+    ];
+
+    window.onload = function() {
+        const sel = document.getElementById('empSelect');
+        employees.forEach((e, i) => {
+            let opt = document.createElement('option');
+            opt.value = i;
+            opt.text = (i+1) + ". " + e.name;
+            sel.add(opt);
+        });
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dateInput1').value = today;
+        document.getElementById('dateInput2').value = today;
+    };
+
+    function setMode(m) {
+        document.getElementById('mode1').style.display = m===1 ? 'block' : 'none';
+        document.getElementById('mode2').style.display = m===2 ? 'block' : 'none';
+        document.getElementById('btn1').className = m===1 ? 'active' : '';
+        document.getElementById('btn2').className = m===2 ? 'active' : '';
+        document.getElementById('result1').style.display = 'none';
+        document.getElementById('result2').innerHTML = '';
+    }
+
+    function getShift(emp, dateStr) {
+        const date = new Date(dateStr);
+        const dayOfWeek = date.getDay(); // 0=Sun...6=Sat
+
+        if (dayOfWeek === emp.rest) return { code: 'R', name: 'Rest (आराम)', class: 'r-shift' };
+        if (emp.type === "GEN") return { code: 'G', name: 'General Shift', class: 'g-shift' };
+
+        const base = new Date(emp.baseF);
+        const diffDays = Math.round((date - base) / (1000 * 60 * 60 * 24)); 
+        const weeksPassed = Math.floor(diffDays / 7);
+
+        if (weeksPassed % 2 === 0) return { code: 'F', name: 'First Shift (पहली)', class: 'f-shift' };
+        else return { code: 'S', name: 'Second Shift (दूसरी)', class: 's-shift' };
+    }
+
+    function checkShift() {
+        const idx = document.getElementById('empSelect').value;
+        const date = document.getElementById('dateInput1').value;
+        if(!date) return alert("तारीख चुनें");
+
+        const emp = employees[idx];
+        const shift = getShift(emp, date);
+
+        const res = document.getElementById('result1');
+        res.style.display = 'block';
+        res.className = 'result-box ' + shift.class;
+        res.innerHTML = `<div>${emp.name}</div>
+                         <div class="shift-large">${shift.name}</div>
+                         <div>${new Date(date).toLocaleDateString('hi-IN', {weekday:'long', day:'numeric', month:'long'})}</div>`;
+    }
+
+    function checkDailyList() {
+        const date = document.getElementById('dateInput2').value;
+        if(!date) return alert("तारीख चुनें");
+
+        let html = '';
+        const fList=[], sList=[], gList=[], rList=[];
+
+        employees.forEach(emp => {
+            const s = getShift(emp, date);
+            const item = `<div class="list-row">
+                            <span>${emp.name}</span>
+                            <span class="badge ${s.class}">${s.code}</span>
+                          </div>`;
+            if(s.code === 'F') fList.push(item);
+            else if(s.code === 'S') sList.push(item);
+            else if(s.code === 'G') gList.push(item);
+            else rList.push(item);
+        });
+
+        const dName = new Date(date).toLocaleDateString('hi-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+        
+        html += `<h3 style="text-align:center; color:#555; margin-bottom:20px;">${dName}</h3>`;
+        if(fList.length) html += `<div style="background:#d1e7dd; padding:8px; border-radius:5px; font-weight:bold; color:#0f5132; margin-top:15px;">🌞 First Shift (${fList.length})</div><div>${fList.join('')}</div>`;
+        if(sList.length) html += `<div style="background:#f8d7da; padding:8px; border-radius:5px; font-weight:bold; color:#842029; margin-top:15px;">🌙 Second Shift (${sList.length})</div><div>${sList.join('')}</div>`;
+        if(gList.length) html += `<div style="background:#fff3cd; padding:8px; border-radius:5px; font-weight:bold; color:#664d03; margin-top:15px;">🏢 General (${gList.length})</div><div>${gList.join('')}</div>`;
+        if(rList.length) html += `<div style="background:#e2e3e5; padding:8px; border-radius:5px; font-weight:bold; color:#41464b; margin-top:15px;">🛌 Rest (${rList.length})</div><div>${rList.join('')}</div>`;
+
+        document.getElementById('result2').innerHTML = html;
+    }
+</script>
+
+</body>
+</html>
